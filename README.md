@@ -5,3 +5,7 @@ All main folders are seperate projects and single files are standalone
 Kyle S Graphics
 -
 A set of independant java files each outputing a different drawn image
+
+Decisions
+-
+A set of independant java files each with a diffent basic if structures.
