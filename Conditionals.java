@@ -8,7 +8,7 @@ import hsa.Console;
 
 public class Conditionals {
 	Console c;
-	int num1, num2, num3;
+	int answer;
 
 	public Conditionals() {
 		c = new Console();
@@ -16,20 +16,24 @@ public class Conditionals {
 
 	public void askData() {
 		drawTitle();
-		c.println("Enter 3 numbers and this'll output the largest");
-		num1 = c.readInt();
-		num2 = c.readInt();
-		num3 = c.readInt();
+		c.println("10 - 20: ");
+		answer = c.readInt();
 	}
 
 	public void displayData() {
 		drawTitle();
-		if (num1 > num2 && num1 > num3)
-			c.println(num1 + " is the greatest.");
-		else if (num2 > num1 && num2 > num3)
-			c.println(num2 + " is the greatest.");
-		else if (num3 > num1 && num3 > num2)
-			c.println(num3 + " is the greatest.");
+		switch (answer) {
+		case 10:
+		case 9:
+			c.println("High");
+			break;
+		case 15:
+			c.println("Mid");
+			break;
+		default:
+			c.println("High");
+			break;
+		}
 	}
 
 	private void drawTitle() {
