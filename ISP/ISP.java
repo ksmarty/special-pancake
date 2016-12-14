@@ -57,7 +57,7 @@ public class ISP {
 	 * c			Console		Stores the console instance
 	 *****************************************************************************************/
 	public ISP() {
-		c = new Console("Snake! - Kyle Schwartz's ISP");
+		c = new Console(25, 78, "Snake! - Kyle Schwartz's ISP");
 		// Sets up the font
 		try {
 			font = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("isp.ttf"));
@@ -87,6 +87,7 @@ public class ISP {
 			// Allows the user only 1 move and updates the lists
 			newMove = 2;
 			// Enables the pause feature
+			/*-
 			if (key == 'p') {
 				int z = 2;
 				// Sets the top bar colour
@@ -132,15 +133,14 @@ public class ISP {
 				c.setColor(Color.decode("#689F38"));
 				// Draws the top bar
 				c.fillRect(0, 0, 640, 50);
-				key = '\u0000';
+				// key = '\u0000';
 			}
+			*/
 
 			// Moves the snake forward one
-			if (key != 'p') {
-				for (int x = snakeX.size() - 1; x > 0; x--) {
-					snakeX.set(x, snakeX.get(x - 1));
-					snakeY.set(x, snakeY.get(x - 1));
-				}
+			for (int x = snakeX.size() - 1; x > 0; x--) {
+				snakeX.set(x, snakeX.get(x - 1));
+				snakeY.set(x, snakeY.get(x - 1));
 			}
 
 			// Checks if the user pressed 'a'
@@ -396,8 +396,7 @@ public class ISP {
 		c.drawString("to move the snake. Eat the fruit to", 10, 240);
 		c.drawString("grow and go faster. Never run into", 10, 270);
 		c.drawString("yourself or the edge, or you'll die.", 10, 300);
-		c.drawString("Press P at any time to pause.", 10, 330);
-		c.drawString("Have Fun!", 10, 360);
+		c.drawString("Have Fun!", 10, 330);
 
 		pauseProgram(1);
 	}
@@ -459,7 +458,7 @@ public class ISP {
 		String y;
 		String z;
 		for (int x = 0; x < 10; x++) {
-			if (Integer.parseInt(scores[x]) == 0) {
+			if (players[x].equals("null")) {
 				y = "";
 				z = "";
 			} else {
@@ -479,6 +478,7 @@ public class ISP {
 			for (int a = 0; a < 10; a++)
 				output.println("0");
 			output.close();
+			leaderboard();
 		}
 	}
 
@@ -504,6 +504,7 @@ public class ISP {
 						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 				if (result == JOptionPane.YES_OPTION)
 					break;
+			} else if (i.option == '\u0000') {
 			} else {
 				JOptionPane.showMessageDialog(null, "That's not a valid input! Press OK to continue.",
 						"You've Made A Horrible Life Choice", JOptionPane.ERROR_MESSAGE);
