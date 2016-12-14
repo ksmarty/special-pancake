@@ -27,8 +27,12 @@ import hsa.Console;
 /*-****************************************************************************************
  * Variables 
  * Name			Type		Description
+ * ---------------------------------------------------------------------------------------
  * option		char		Stores the user's menu choice
  * font			Font		Stores the font used on all screens
+ * snakeX		LinkedList	Stores all of the snake X positions
+ * snakeY		LinkedList	Stores all of the snake Y positions
+ * end			boolean		Stores whether the snake game should quit
  *****************************************************************************************/
 
 public class ISP {
@@ -82,37 +86,12 @@ public class ISP {
 		if (newMove == 1) {
 			// Allows the user only 1 move and updates the lists
 			newMove = 2;
-
-			for (int x = snakeX.size() - 1; x > 0; x--) {
-				snakeX.set(x, snakeX.get(x - 1));
-				snakeY.set(x, snakeY.get(x - 1));
-			}
-
-			// Checks if the user pressed 'a'
-			if (key == 'a' || ke.getKeyCode() == KeyEvent.VK_LEFT) {
-				// Moves the snake's head to the left
-				snakeX.set(0, Integer.toString(Integer.parseInt((String) snakeX.getFirst()) - 25));
-				// Checks if the user pressed 's'
-			} else if (key == 's' || ke.getKeyCode() == KeyEvent.VK_DOWN) {
-				// Moves the snake's head down
-				snakeY.set(0, Integer.toString(Integer.parseInt((String) snakeY.getFirst()) + 25));
-				// Checks if the user pressed 'd'
-			} else if (key == 'd' || ke.getKeyCode() == KeyEvent.VK_RIGHT) {
-				// Moves the snake's head right
-				snakeX.set(0, Integer.toString(Integer.parseInt((String) snakeX.getFirst()) + 25));
-				// Checks if the user pressed 'w'
-			} else if (key == 'w' || ke.getKeyCode() == KeyEvent.VK_UP) {
-				// Moves the snake's head up
-				snakeY.set(0, Integer.toString(Integer.parseInt((String) snakeY.getFirst()) - 25));
-				// Checks if the user pressed ESC
-			} else if (key == 27)
-				// Breaks another loop sending the user back to main menu
-				newMove = 0;
-			else if (key == 'p') {
+			// Enables the pause feature
+			if (key == 'p') {
 				int z = 2;
-				// Sets the background colour
+				// Sets the top bar colour
 				c.setColor(Color.decode("#689F38"));
-				// Draws the background
+				// Draws the top bar
 				c.fillRect(0, 0, 640, 50);
 				// Sets font colour
 				c.setColor(Color.decode("#212121"));
@@ -149,63 +128,83 @@ public class ISP {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 				}
-				c.clear();
-				// Sets the background colour
-				c.setColor(Color.decode("#8BC34A"));
-				// Draws the background
-				c.fillRect(0, 0, 640, 500);
-				// Sets the background colour
+				// Sets the top bar colour
 				c.setColor(Color.decode("#689F38"));
-				// Draws the background
+				// Draws the top bar
 				c.fillRect(0, 0, 640, 50);
-				// Sets fruit colour
-				c.setColor(Color.decode("#0000FF"));
-				// Draws fruit
-				c.fillRect(fruit[1], fruit[2], 25, 25);
-				key = 'z';
+				key = '\u0000';
 			}
-		}
 
-		if (Integer.parseInt((String) snakeX.getFirst()) < 0 || Integer.parseInt((String) snakeX.getFirst()) > 600
-				|| Integer.parseInt((String) snakeY.getFirst()) < 50
-				|| Integer.parseInt((String) snakeY.getFirst()) > 500)
-			end = false;
-
-		// Stops snake from touching itself
-		if (score != 1) {
-			for (int z = snakeX.size() - 2; z > 0; z--) {
-				if (Integer.parseInt((String) snakeX.getFirst()) == Integer.parseInt((String) snakeX.get(z))
-						&& Integer.parseInt((String) snakeY.getFirst()) == Integer.parseInt((String) snakeY.get(z)))
-					end = false;
+			// Moves the snake forward one
+			if (key != 'p') {
+				for (int x = snakeX.size() - 1; x > 0; x--) {
+					snakeX.set(x, snakeX.get(x - 1));
+					snakeY.set(x, snakeY.get(x - 1));
+				}
 			}
-		}
 
-		for (int b = 0; b < snakeX.size() - 1; b++) {
-			if (Integer.parseInt((String) snakeX.get(b)) == fruit[1]
-					&& Integer.parseInt((String) snakeY.get(b)) == fruit[2]) {
-				snakeX.removeLast();
-				snakeY.removeLast();
-				snakeX.addLast(Integer.toString(fruit[1]));
-				snakeY.addLast(Integer.toString(fruit[2]));
-				snakeX.addLast(Integer.toString(fruit[1]));
-				snakeY.addLast(Integer.toString(fruit[2]));
-				// Sets the background colour
-				c.setColor(Color.decode("#8BC34A"));
-				// Draws the background
-				c.fillRect(0, 50, 640, 500);
-				fruit[0] = 1;
-				// Makes a new fruit X
-				fruit[1] = (1 + (int) (Math.random() * 24)) * 25;
-				// Makes a new fruit Y
-				fruit[2] = (1 + (int) (Math.random() * 16)) * 25 + 50;
-				// Sets fruit colour
-				c.setColor(Color.decode("#0000FF"));
-				// Draws fruit
-				c.fillRect(fruit[1], fruit[2], 25, 25);
-				// Declares that a new fruit should not be generated
-				fruit[0] = 2;
-				// Breaks the loop to prevent memory leak
-				break;
+			// Checks if the user pressed 'a'
+			if (key == 'a' || ke.getKeyCode() == KeyEvent.VK_LEFT) {
+				// Moves the snake's head to the left
+				snakeX.set(0, Integer.toString(Integer.parseInt((String) snakeX.getFirst()) - 25));
+				// Checks if the user pressed 's'
+			} else if (key == 's' || ke.getKeyCode() == KeyEvent.VK_DOWN) {
+				// Moves the snake's head down
+				snakeY.set(0, Integer.toString(Integer.parseInt((String) snakeY.getFirst()) + 25));
+				// Checks if the user pressed 'd'
+			} else if (key == 'd' || ke.getKeyCode() == KeyEvent.VK_RIGHT) {
+				// Moves the snake's head right
+				snakeX.set(0, Integer.toString(Integer.parseInt((String) snakeX.getFirst()) + 25));
+				// Checks if the user pressed 'w'
+			} else if (key == 'w' || ke.getKeyCode() == KeyEvent.VK_UP) {
+				// Moves the snake's head up
+				snakeY.set(0, Integer.toString(Integer.parseInt((String) snakeY.getFirst()) - 25));
+				// Checks if the user pressed ESC
+			} else if (key == 27)
+				// Breaks another loop sending the user back to main menu
+				newMove = 0;
+
+			if (Integer.parseInt((String) snakeX.getFirst()) < 0 || Integer.parseInt((String) snakeX.getFirst()) > 600
+					|| Integer.parseInt((String) snakeY.getFirst()) < 50
+					|| Integer.parseInt((String) snakeY.getFirst()) > 500)
+				end = false;
+
+			// Stops snake from touching itself
+			if (score != 1) {
+				for (int z = snakeX.size() - 2; z > 0; z--) {
+					if (Integer.parseInt((String) snakeX.getFirst()) == Integer.parseInt((String) snakeX.get(z))
+							&& Integer.parseInt((String) snakeY.getFirst()) == Integer.parseInt((String) snakeY.get(z)))
+						end = false;
+				}
+			}
+
+			for (int b = 0; b < snakeX.size() - 1; b++) {
+				if (Integer.parseInt((String) snakeX.get(b)) == fruit[1]
+						&& Integer.parseInt((String) snakeY.get(b)) == fruit[2]) {
+					snakeX.removeLast();
+					snakeY.removeLast();
+					snakeX.addLast(Integer.toString(fruit[1]));
+					snakeY.addLast(Integer.toString(fruit[2]));
+					snakeX.addLast(Integer.toString(fruit[1]));
+					snakeY.addLast(Integer.toString(fruit[2]));
+					// Sets the background colour
+					c.setColor(Color.decode("#8BC34A"));
+					// Draws the background
+					c.fillRect(0, 50, 640, 500);
+					fruit[0] = 1;
+					// Makes a new fruit X
+					fruit[1] = (1 + (int) (Math.random() * 24)) * 25;
+					// Makes a new fruit Y
+					fruit[2] = (1 + (int) (Math.random() * 16)) * 25 + 50;
+					// Sets fruit colour
+					c.setColor(Color.decode("#0000FF"));
+					// Draws fruit
+					c.fillRect(fruit[1], fruit[2], 25, 25);
+					// Declares that a new fruit should not be generated
+					fruit[0] = 2;
+					// Breaks the loop to prevent memory leak
+					break;
+				}
 			}
 		}
 
@@ -455,10 +454,32 @@ public class ISP {
 		buffer.close();
 
 		c.setFont(font.deriveFont(30f));
-		for (int x = 0; x < 10; x++)
-			c.drawString(players[x] + ": " + scores[x], 10, 150 + x * 30);
+		c.drawString("Press 'c' to clear the high scores.", 10, 120);
+		c.drawLine(10, 124, 580, 124);
+		String y;
+		String z;
+		for (int x = 0; x < 10; x++) {
+			if (Integer.parseInt(scores[x]) == 0) {
+				y = "";
+				z = "";
+			} else {
+				y = players[x] + ": ";
+				z = scores[x];
+			}
+
+			c.drawString(y + z, 10, 150 + x * 30);
+		}
 
 		pauseProgram(1);
+
+		if (key == 'c') {
+			PrintWriter output = new PrintWriter(new FileWriter("leaderboard.dat"));
+			for (int a = 0; a < 10; a++)
+				output.println("null");
+			for (int a = 0; a < 10; a++)
+				output.println("0");
+			output.close();
+		}
 	}
 
 	public static void main(String[] args) {
