@@ -32,7 +32,10 @@ import hsa.Console;
  * font			Font		Stores the font used on all screens
  * snakeX		LinkedList	Stores all of the snake X positions
  * snakeY		LinkedList	Stores all of the snake Y positions
- * end			boolean		Stores whether the snake game should quit
+ * key			char		Stores the user's ASCII key presses
+ * ke			KeyEvent	Stores the user's arrow key presses
+ * fruit		int[]		Stores the x & y coordinates of the fruit and whether a new one should be generated
+ * newMove		int			Checks if the user is allowed to move and quits the game
  *****************************************************************************************/
 
 public class ISP {
@@ -41,7 +44,6 @@ public class ISP {
 	Font font;
 	LinkedList snakeX = new LinkedList();
 	LinkedList snakeY = new LinkedList();
-	boolean end = true;
 	char key;
 	KeyEvent ke;
 	int[] fruit = new int[3];
@@ -55,6 +57,8 @@ public class ISP {
 	 * Name			Type		Description
 	 * font			Font		Stores the font used on all screens
 	 * c			Console		Stores the console instance
+	 * key			char		Gets the user's ASCII key presses
+	 * ke			KeyEvent	Gets the users key presses
 	 *****************************************************************************************/
 	public ISP() {
 		c = new Console(25, 78, "Snake! - Kyle Schwartz's ISP");
@@ -86,58 +90,8 @@ public class ISP {
 		if (newMove == 1) {
 			// Allows the user only 1 move and updates the lists
 			newMove = 2;
-			// Enables the pause feature
-			/*-
-			if (key == 'p') {
-				int z = 2;
-				// Sets the top bar colour
-				c.setColor(Color.decode("#689F38"));
-				// Draws the top bar
-				c.fillRect(0, 0, 640, 50);
-				// Sets font colour
-				c.setColor(Color.decode("#212121"));
-				// Sets font
-				c.setFont(font.deriveFont(46f));
-				// Prompts the user to resume
-				c.drawString("Press any key to resume", 10, 45);
-				while (key == 'p') {
-					try {
-						Thread.sleep(z);
-					} catch (InterruptedException e) {
-					}
-					z++;
-				}
-				// Sets the background colour
-				c.setColor(Color.decode("#689F38"));
-				// Draws the background
-				c.fillRect(0, 0, 640, 50);
-				// Sets font colour
-				c.setColor(Color.decode("#212121"));
-				// Tells the user to program is resuming
-				c.drawString("Resuming in 3..", 10, 45);
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-				}
-				c.drawString("2..", 380, 45);
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-				}
-				c.drawString("1..", 430, 45);
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-				}
-				// Sets the top bar colour
-				c.setColor(Color.decode("#689F38"));
-				// Draws the top bar
-				c.fillRect(0, 0, 640, 50);
-				// key = '\u0000';
-			}
-			*/
 
-			// Moves the snake forward one
+			// Moves the snake forward one position
 			for (int x = snakeX.size() - 1; x > 0; x--) {
 				snakeX.set(x, snakeX.get(x - 1));
 				snakeY.set(x, snakeY.get(x - 1));
@@ -164,29 +118,43 @@ public class ISP {
 				// Breaks another loop sending the user back to main menu
 				newMove = 0;
 
+			// Checks to see if the snake is touching an edge
 			if (Integer.parseInt((String) snakeX.getFirst()) < 0 || Integer.parseInt((String) snakeX.getFirst()) > 600
 					|| Integer.parseInt((String) snakeY.getFirst()) < 50
 					|| Integer.parseInt((String) snakeY.getFirst()) > 500)
-				end = false;
+				// Tells the program to exit
+				newMove = 0;
 
 			// Stops snake from touching itself
 			if (score != 1) {
 				for (int z = snakeX.size() - 2; z > 0; z--) {
 					if (Integer.parseInt((String) snakeX.getFirst()) == Integer.parseInt((String) snakeX.get(z))
 							&& Integer.parseInt((String) snakeY.getFirst()) == Integer.parseInt((String) snakeY.get(z)))
-						end = false;
+						newMove = 0;
 				}
 			}
 
+			// Checks to see if the snake is touching the fruit
 			for (int b = 0; b < snakeX.size() - 1; b++) {
 				if (Integer.parseInt((String) snakeX.get(b)) == fruit[1]
 						&& Integer.parseInt((String) snakeY.get(b)) == fruit[2]) {
+					// Removes the last x position that is used for erasing
 					snakeX.removeLast();
+					// Removes the last x position that is used for erasing
 					snakeY.removeLast();
-					snakeX.addLast(Integer.toString(fruit[1]));
-					snakeY.addLast(Integer.toString(fruit[2]));
-					snakeX.addLast(Integer.toString(fruit[1]));
-					snakeY.addLast(Integer.toString(fruit[2]));
+					// Adds 4 if the users score is only 1
+					if (score == 1) {
+						for (int x = 0; x < 5; x++) {
+							snakeX.addLast(Integer.toString(fruit[1]));
+							snakeY.addLast(Integer.toString(fruit[2]));
+						}
+						// Adds 4 otherwise
+					} else {
+						for (int x = 0; x < 6; x++) {
+							snakeX.addLast(Integer.toString(fruit[1]));
+							snakeY.addLast(Integer.toString(fruit[2]));
+						}
+					}
 					// Sets the background colour
 					c.setColor(Color.decode("#8BC34A"));
 					// Draws the background
@@ -202,13 +170,17 @@ public class ISP {
 					c.fillRect(fruit[1], fruit[2], 25, 25);
 					// Declares that a new fruit should not be generated
 					fruit[0] = 2;
-					// Breaks the loop to prevent memory leak
+					/*- Breaks the loop to prevent memory leak & unneeded processing */
 					break;
 				}
 			}
 		}
 
-		return 505 - score * 5;
+		// Sets the user's speed based on score
+		while (score != 90) {
+			return 1000 - score * 10;
+		}
+		return 100;
 	}
 
 	/*-****************************************************************************************
@@ -223,7 +195,6 @@ public class ISP {
 		fruit[0] = 1;
 		int score = 1;
 		newMove = 1;
-		end = true;
 
 		snakeX.clear();
 		snakeY.clear();
@@ -253,9 +224,7 @@ public class ISP {
 		// Declares that a new fruit should not be generated
 		fruit[0] = 2;
 
-		while (end) {
-			if (newMove == 0)
-				break;
+		while (newMove != 0) {
 			// Updates score
 			score = snakeX.size() - 1;
 			// Sets top bar colour
@@ -269,7 +238,7 @@ public class ISP {
 			// Draws score
 			c.drawString("Score: " + score, 10, 45);
 			// Draws Speed
-			c.drawString("Speed: " + (505 - x), 350, 45);
+			c.drawString("Speed: " + (1000 - x), 350, 45);
 			// Sets erase colour to the background colour
 			c.setColor(Color.decode("#8BC34A"));
 			// Erases last position
