@@ -159,19 +159,28 @@ public class ISP {
 					c.setColor(Color.decode("#8BC34A"));
 					// Draws the background
 					c.fillRect(0, 50, 640, 500);
-					fruit[0] = 1;
-					// Makes a new fruit X
-					fruit[1] = (1 + (int) (Math.random() * 24)) * 25;
-					// Makes a new fruit Y
-					fruit[2] = (1 + (int) (Math.random() * 16)) * 25 + 50;
-					// Sets fruit colour
-					c.setColor(Color.decode("#0000FF"));
-					// Draws fruit
-					c.fillRect(fruit[1], fruit[2], 25, 25);
-					// Declares that a new fruit should not be generated
-					fruit[0] = 2;
-					/*- Breaks the loop to prevent memory leak & unneeded processing */
-					break;
+					int d = snakeX.size();
+					boolean e = true;
+					while (e) {
+						// Makes a new fruit X
+						fruit[1] = (1 + (int) (Math.random() * 24)) * 25;
+						// Makes a new fruit Y
+						fruit[2] = (1 + (int) (Math.random() * 16)) * 25 + 50;
+						for (int c = 0; c < snakeX.size() - 1; c++) {
+							if (Integer.parseInt((String) snakeX.get(c)) != fruit[1]
+									&& Integer.parseInt((String) snakeY.get(c)) != fruit[2]) {
+								d--;
+							} else if (d == 0) {
+								e = false;
+							}
+						}
+						// Sets fruit colour
+						c.setColor(Color.decode("#0000FF"));
+						// Draws fruit
+						c.fillRect(fruit[1], fruit[2], 25, 25);
+						/*- Breaks the loop to prevent memory leak & unneeded processing */
+						break;
+					}
 				}
 			}
 		}
