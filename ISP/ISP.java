@@ -1,3 +1,5 @@
+package isp;
+
 import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Font;
@@ -15,39 +17,23 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 
 import hsa.Console;
-/*-
- * Kyle Schwartz
- * Mrs. Krasteva
- * January, 2017
- * Snake! My ISP that allows you to play the classic game snake.
- */
-/*-****************************************************************************************
- * Variables 
- * Name			Type		Description
- * ---------------------------------------------------------------------------------------
- * option		char		Stores the user's menu choice
- * font			Font		Stores the font used on all screens
- * snakeX		LinkedList	Stores all of the snake X positions
- * snakeY		LinkedList	Stores all of the snake Y positions
- * key			char		Stores the user's ASCII key presses
- * ke			KeyEvent	Stores the user's arrow key presses
- * fruit		int[]		Stores the x & y coordinates of the fruit and whether a new one should be generated
- * newMove		int			Checks if the user is allowed to move and quits the game
- *****************************************************************************************/
 
 public class ISP {
 	static Console c;
 	char option;
 	Font font;
-	LinkedList snakeX = new LinkedList();
-	LinkedList snakeY = new LinkedList();
+	LinkedList<Integer> snakeX = new LinkedList<Integer>();
+	LinkedList<Integer> snakeY = new LinkedList<Integer>();
 	char key;
 	KeyEvent ke;
 	int[] fruit = new int[3];
 	int newMove;
+	Thread thread = new Thread(new Music(c));
 
 	/*-****************************************************************************************
 	 * ISP
@@ -82,7 +68,7 @@ public class ISP {
 	}
 
 	/*-****************************************************************************************
-	 * key
+	 * movement
 	 * This method sets the direction that the snake is going to move
 	 *****************************************************************************************/
 	private int movement(int score) {
@@ -100,44 +86,40 @@ public class ISP {
 			// Checks if the user pressed 'a'
 			if (key == 'a' || ke.getKeyCode() == KeyEvent.VK_LEFT) {
 				// Moves the snake's head to the left
-				snakeX.set(0, Integer.toString(Integer.parseInt((String) snakeX.getFirst()) - 25));
+				snakeX.set(0, snakeX.getFirst() - 25);
 				// Checks if the user pressed 's'
 			} else if (key == 's' || ke.getKeyCode() == KeyEvent.VK_DOWN) {
 				// Moves the snake's head down
-				snakeY.set(0, Integer.toString(Integer.parseInt((String) snakeY.getFirst()) + 25));
+				snakeY.set(0, snakeY.getFirst() + 25);
 				// Checks if the user pressed 'd'
 			} else if (key == 'd' || ke.getKeyCode() == KeyEvent.VK_RIGHT) {
 				// Moves the snake's head right
-				snakeX.set(0, Integer.toString(Integer.parseInt((String) snakeX.getFirst()) + 25));
+				snakeX.set(0, snakeX.getFirst() + 25);
 				// Checks if the user pressed 'w'
 			} else if (key == 'w' || ke.getKeyCode() == KeyEvent.VK_UP) {
 				// Moves the snake's head up
-				snakeY.set(0, Integer.toString(Integer.parseInt((String) snakeY.getFirst()) - 25));
+				snakeY.set(0, snakeY.getFirst() - 25);
 				// Checks if the user pressed ESC
 			} else if (key == 27)
 				// Breaks another loop sending the user back to main menu
 				newMove = 0;
 
 			// Checks to see if the snake is touching an edge
-			if (Integer.parseInt((String) snakeX.getFirst()) < 0 || Integer.parseInt((String) snakeX.getFirst()) > 600
-					|| Integer.parseInt((String) snakeY.getFirst()) < 50
-					|| Integer.parseInt((String) snakeY.getFirst()) > 500)
+			if (snakeX.getFirst() < 0 || snakeX.getFirst() > 600 || snakeY.getFirst() < 50 || snakeY.getFirst() > 500)
 				// Tells the program to exit
 				newMove = 0;
 
 			// Stops snake from touching itself
 			if (score != 1) {
 				for (int z = snakeX.size() - 2; z > 0; z--) {
-					if (Integer.parseInt((String) snakeX.getFirst()) == Integer.parseInt((String) snakeX.get(z))
-							&& Integer.parseInt((String) snakeY.getFirst()) == Integer.parseInt((String) snakeY.get(z)))
+					if (snakeX.getFirst() == snakeX.get(z) && snakeY.getFirst() == snakeY.get(z))
 						newMove = 0;
 				}
 			}
 
 			// Checks to see if the snake is touching the fruit
 			for (int b = 0; b < snakeX.size() - 1; b++) {
-				if (Integer.parseInt((String) snakeX.get(b)) == fruit[1]
-						&& Integer.parseInt((String) snakeY.get(b)) == fruit[2]) {
+				if (snakeX.get(b) == fruit[1] && snakeY.get(b) == fruit[2]) {
 					// Removes the last x position that is used for erasing
 					snakeX.removeLast();
 					// Removes the last x position that is used for erasing
@@ -145,14 +127,14 @@ public class ISP {
 					// Adds 4 if the users score is only 1
 					if (score == 1) {
 						for (int x = 0; x < 5; x++) {
-							snakeX.addLast(Integer.toString(fruit[1]));
-							snakeY.addLast(Integer.toString(fruit[2]));
+							snakeX.addLast(fruit[1]);
+							snakeY.addLast(fruit[2]);
 						}
-						// Adds 4 otherwise
+						// Adds 5 otherwise
 					} else {
 						for (int x = 0; x < 6; x++) {
-							snakeX.addLast(Integer.toString(fruit[1]));
-							snakeY.addLast(Integer.toString(fruit[2]));
+							snakeX.addLast(fruit[1]);
+							snakeY.addLast(fruit[2]);
 						}
 					}
 					// Sets the background colour
@@ -167,8 +149,7 @@ public class ISP {
 						// Makes a new fruit Y
 						fruit[2] = (1 + (int) (Math.random() * 16)) * 25 + 50;
 						for (int c = 0; c < snakeX.size() - 1; c++) {
-							if (Integer.parseInt((String) snakeX.get(c)) != fruit[1]
-									&& Integer.parseInt((String) snakeY.get(c)) != fruit[2]) {
+							if (snakeX.get(c) != fruit[1] && snakeY.get(c) != fruit[2]) {
 								d--;
 							} else if (d == 0) {
 								e = false;
@@ -208,10 +189,10 @@ public class ISP {
 		snakeX.clear();
 		snakeY.clear();
 
-		snakeX.add("100");
-		snakeY.add("100");
-		snakeX.add("100");
-		snakeY.add("100");
+		snakeX.add(100);
+		snakeY.add(100);
+		snakeX.add(100);
+		snakeY.add(100);
 
 		// Sets the background colour
 		c.setColor(Color.decode("#8BC34A"));
@@ -251,14 +232,13 @@ public class ISP {
 			// Sets erase colour to the background colour
 			c.setColor(Color.decode("#8BC34A"));
 			// Erases last position
-			c.fillRect(Integer.parseInt((String) snakeX.getLast()), Integer.parseInt((String) snakeY.getLast()), 25,
-					25);
+			c.fillRect(snakeX.getLast(), snakeY.getLast(), 25, 25);
 			// Sets snake colour
 			c.setColor(Color.decode("#FF4500"));
 			// Draws the snake
 			for (int a = 0; a < snakeX.size() - 1; a++)
-				c.fillRoundRect(Integer.parseInt((String) snakeX.get(a)), Integer.parseInt((String) snakeY.get(a)), 25,
-						25, 10, 10);
+				c.fillRoundRect(snakeX.get(a), snakeY.get(a), 25, 25, 10, 10);
+
 			// Allows the user to enter a direction
 			newMove = 1;
 			try {
@@ -277,30 +257,33 @@ public class ISP {
 	}
 
 	private void scoreChecker(int score) throws FileNotFoundException, IOException {
-		String[] players = new String[10];
-		String[] scores = new String[10];
+		LinkedList<String> players = new LinkedList<String>();
+		LinkedList<String> scores = new LinkedList<String>();
 		String name = null;
 
 		BufferedReader buffer = new BufferedReader(new FileReader(new File("leaderboard.dat")));
 		for (int x = 0; x < 10; x++)
-			players[x] = buffer.readLine();
+			players.add(buffer.readLine());
 		for (int x = 0; x < 10; x++)
-			scores[x] = buffer.readLine();
+			scores.add(buffer.readLine());
 		buffer.close();
 
 		for (int x = 0; x < 10; x++) {
-			if (score > Integer.parseInt(scores[x])) {
+			if (score > Integer.parseInt(scores.get(x))) {
 				while (name == null || name.length() > 20)
 					name = JOptionPane.showInputDialog(null, "Please enter your name (20 characters or less):",
 							"Congratulations! New high score!", JOptionPane.QUESTION_MESSAGE);
-				players[x] = name;
-				scores[x] = Integer.toString(score);
+				players.add(x, name);
+				scores.add(x, "" + score);
+
+				scores.remove(10);
+				players.remove(10);
 
 				PrintWriter output = new PrintWriter(new FileWriter("leaderboard.dat"));
 				for (int z = 0; z < 10; z++)
-					output.println(players[z]);
+					output.println(players.get(z));
 				for (int z = 0; z < 10; z++)
-					output.println(scores[z]);
+					output.println(scores.get(z));
 				output.close();
 
 				break;
@@ -351,7 +334,7 @@ public class ISP {
 		// Prompts the user to press a key
 		c.drawString("Press any key to " + y + "...", 10, 480);
 		// Waits for user input
-		c.getChar();
+		getChar();
 	}
 
 	public void goodBye() {
@@ -363,7 +346,23 @@ public class ISP {
 		c.drawString("made by Kyle Schwartz.", 10, 280);
 
 		pauseProgram(2);
+		try {
+			Music.play.stop();
+			thread.stop();
+		} catch (Exception e) {
+		}
 		c.close();
+	}
+
+	private void getChar() {
+		char z = key;
+		while (key == z) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+			}
+		}
+		option = key;
 	}
 
 	public void instructions() {
@@ -387,16 +386,62 @@ public class ISP {
 		c.drawString("1. Play", 27, x);
 		c.drawString("2. Instructions", 21, x + 50);
 		c.drawString("3. Leaderboard", 25, x + 100);
-		c.drawString("4. Quit", 20, x + 150);
-		try {
-			Thread.sleep(50);
-		} catch (InterruptedException e) {
+		c.drawString("4. Settings", 20, x + 150);
+		c.drawString("5. Lawyer Stuff", 20, x + 200);
+		c.drawString("6. Exit", 20, x + 250);
+
+		getChar();
+	}
+
+	public void settings() throws UnsupportedAudioFileException, IOException {
+		title();
+		c.setFont(font.deriveFont(50f));
+		c.drawString("1. Set Volume", 27, 210);
+		c.drawString("2. Choose Song", 27, 260);
+		getChar();
+		option = key;
+		if (option == '1') {
+			String g = null;
+			int h = -1;
+			while (true) {
+				g = JOptionPane.showInputDialog(null, "Please enter a volume between 0 - 100 %", "Change Volume",
+						JOptionPane.QUESTION_MESSAGE);
+				try {
+					h = Integer.parseInt(g);
+				} catch (NumberFormatException e) {
+
+				}
+				if (h > -1 && h < 101)
+					break;
+			}
+			Music.volume.setValue(-50 + h / 2);
+		} else if (option == '2') {
+			Object[] possibilities = { "Song 1", "Song 2", "Song 3" };
+			String s = null;
+			while (s == null)
+				s = (String) JOptionPane.showInputDialog(null, "Please choose a song.", "Song Choice",
+						JOptionPane.PLAIN_MESSAGE, null, possibilities, "Song 1");
+
+			if (s == "Song 1")
+				Music.song = Music.song1;
+			else if (s == "Song 2")
+				Music.song = Music.song2;
+			else if (s == "Song 3")
+				Music.song = Music.song3;
+
+			try {
+				Music.play.close();
+				Music.play = AudioSystem.getClip();
+				Music.play.open(Music.audioInputStream);
+			} catch (Exception e) {
+			}
 		}
-		option = c.getChar();
+
 	}
 
 	public void splashScreen() {
 		c.clear();
+
 		c.setFont(font.deriveFont(100f));
 		c.setColor(Color.decode("#8BC34A"));
 		for (int x = -350; x < 0; x++) {
@@ -415,6 +460,17 @@ public class ISP {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 		}
+	}
+
+	public void legal() {
+		title();
+		c.setFont(font.deriveFont(30f));
+
+		c.drawString("Copyright 2016 Kyle Schwartz", 10, 210);
+		c.drawString("\"Resistor Anthems\" by Eric Skiff is", 10, 270);
+		c.drawString("licenced under CC BY 4.0", 10, 300);
+
+		pauseProgram(1);
 	}
 
 	public void leaderboard() throws FileNotFoundException, IOException {
@@ -462,26 +518,36 @@ public class ISP {
 
 	public static void main(String[] args) {
 		ISP i = new ISP();
-		// i.splashScreen();
+		i.thread.start();
+		i.splashScreen();
 		while (true) {
 			i.mainMenu();
 			if (i.option == '1')
 				i.snake();
 			else if (i.option == '2')
 				i.instructions();
-			else if (i.option == '3')
+			else if (i.option == '3') {
 				try {
 					i.leaderboard();
 				} catch (FileNotFoundException e) {
 				} catch (IOException e) {
 				}
-			else if (i.option == '4') {
+			} else if (i.option == '4')
+				try {
+					i.settings();
+				} catch (UnsupportedAudioFileException e) {
+				} catch (IOException e) {
+				}
+			else if (i.option == '5')
+				i.legal();
+			else if (i.option == '6') {
 				Object[] options = { "Yes, I want to leave and feel sad.", "No way! I want to play more!" };
 				int result = JOptionPane.showOptionDialog(null,
 						"Would you like to leave and not continue playing an amazing game??", "A Silly Question",
 						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 				if (result == JOptionPane.YES_OPTION)
 					break;
+
 			} else if (i.option == '\u0000') {
 			} else {
 				JOptionPane.showMessageDialog(null, "That's not a valid input! Press OK to continue.",
