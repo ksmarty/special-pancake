@@ -22,13 +22,32 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 
 import hsa.Console;
+/*-
+ * Kyle Schwartz
+ * Mrs. Krasteva
+ * January, 2017
+ * Snake! My ISP that allows you to play the classic game snake.
+ */
+/*-****************************************************************************************
+ * Variables 
+ * Name			Type		Description
+ * ---------------------------------------------------------------------------------------
+ * option		char		Stores the user's menu choice
+ * font			Font		Stores the font used on all screens
+ * snakeX		LinkedList	Stores all of the snake X positions
+ * snakeY		LinkedList	Stores all of the snake Y positions
+ * key			char		Stores the user's ASCII key presses
+ * ke			KeyEvent	Stores the user's arrow key presses
+ * fruit		int[]		Stores the x & y coordinates of the fruit and whether a new one should be generated
+ * newMove		int			Checks if the user is allowed to move and quits the game
+ *****************************************************************************************/
 
 public class ISP {
 	static Console c;
 	char option;
 	Font font;
-	LinkedList<Integer> snakeX = new LinkedList<Integer>();
-	LinkedList<Integer> snakeY = new LinkedList<Integer>();
+	LinkedList snakeX = new LinkedList();
+	LinkedList snakeY = new LinkedList();
 	char key;
 	KeyEvent ke;
 	int[] fruit = new int[3];
@@ -68,7 +87,7 @@ public class ISP {
 	}
 
 	/*-****************************************************************************************
-	 * movement
+	 * key
 	 * This method sets the direction that the snake is going to move
 	 *****************************************************************************************/
 	private int movement(int score) {
@@ -86,40 +105,44 @@ public class ISP {
 			// Checks if the user pressed 'a'
 			if (key == 'a' || ke.getKeyCode() == KeyEvent.VK_LEFT) {
 				// Moves the snake's head to the left
-				snakeX.set(0, snakeX.getFirst() - 25);
+				snakeX.set(0, Integer.toString(Integer.parseInt((String) snakeX.getFirst()) - 25));
 				// Checks if the user pressed 's'
 			} else if (key == 's' || ke.getKeyCode() == KeyEvent.VK_DOWN) {
 				// Moves the snake's head down
-				snakeY.set(0, snakeY.getFirst() + 25);
+				snakeY.set(0, Integer.toString(Integer.parseInt((String) snakeY.getFirst()) + 25));
 				// Checks if the user pressed 'd'
 			} else if (key == 'd' || ke.getKeyCode() == KeyEvent.VK_RIGHT) {
 				// Moves the snake's head right
-				snakeX.set(0, snakeX.getFirst() + 25);
+				snakeX.set(0, Integer.toString(Integer.parseInt((String) snakeX.getFirst()) + 25));
 				// Checks if the user pressed 'w'
 			} else if (key == 'w' || ke.getKeyCode() == KeyEvent.VK_UP) {
 				// Moves the snake's head up
-				snakeY.set(0, snakeY.getFirst() - 25);
+				snakeY.set(0, Integer.toString(Integer.parseInt((String) snakeY.getFirst()) - 25));
 				// Checks if the user pressed ESC
 			} else if (key == 27)
 				// Breaks another loop sending the user back to main menu
 				newMove = 0;
 
 			// Checks to see if the snake is touching an edge
-			if (snakeX.getFirst() < 0 || snakeX.getFirst() > 600 || snakeY.getFirst() < 50 || snakeY.getFirst() > 500)
+			if (Integer.parseInt((String) snakeX.getFirst()) < 0 || Integer.parseInt((String) snakeX.getFirst()) > 600
+					|| Integer.parseInt((String) snakeY.getFirst()) < 50
+					|| Integer.parseInt((String) snakeY.getFirst()) > 500)
 				// Tells the program to exit
 				newMove = 0;
 
 			// Stops snake from touching itself
 			if (score != 1) {
 				for (int z = snakeX.size() - 2; z > 0; z--) {
-					if (snakeX.getFirst() == snakeX.get(z) && snakeY.getFirst() == snakeY.get(z))
+					if (Integer.parseInt((String) snakeX.getFirst()) == Integer.parseInt((String) snakeX.get(z))
+							&& Integer.parseInt((String) snakeY.getFirst()) == Integer.parseInt((String) snakeY.get(z)))
 						newMove = 0;
 				}
 			}
 
 			// Checks to see if the snake is touching the fruit
 			for (int b = 0; b < snakeX.size() - 1; b++) {
-				if (snakeX.get(b) == fruit[1] && snakeY.get(b) == fruit[2]) {
+				if (Integer.parseInt((String) snakeX.get(b)) == fruit[1]
+						&& Integer.parseInt((String) snakeY.get(b)) == fruit[2]) {
 					// Removes the last x position that is used for erasing
 					snakeX.removeLast();
 					// Removes the last x position that is used for erasing
@@ -127,14 +150,14 @@ public class ISP {
 					// Adds 4 if the users score is only 1
 					if (score == 1) {
 						for (int x = 0; x < 5; x++) {
-							snakeX.addLast(fruit[1]);
-							snakeY.addLast(fruit[2]);
+							snakeX.addLast(Integer.toString(fruit[1]));
+							snakeY.addLast(Integer.toString(fruit[2]));
 						}
-						// Adds 5 otherwise
+						// Adds 4 otherwise
 					} else {
 						for (int x = 0; x < 6; x++) {
-							snakeX.addLast(fruit[1]);
-							snakeY.addLast(fruit[2]);
+							snakeX.addLast(Integer.toString(fruit[1]));
+							snakeY.addLast(Integer.toString(fruit[2]));
 						}
 					}
 					// Sets the background colour
@@ -149,7 +172,8 @@ public class ISP {
 						// Makes a new fruit Y
 						fruit[2] = (1 + (int) (Math.random() * 16)) * 25 + 50;
 						for (int c = 0; c < snakeX.size() - 1; c++) {
-							if (snakeX.get(c) != fruit[1] && snakeY.get(c) != fruit[2]) {
+							if (Integer.parseInt((String) snakeX.get(c)) != fruit[1]
+									&& Integer.parseInt((String) snakeY.get(c)) != fruit[2]) {
 								d--;
 							} else if (d == 0) {
 								e = false;
@@ -189,38 +213,30 @@ public class ISP {
 		snakeX.clear();
 		snakeY.clear();
 
-		snakeX.add(100);
-		snakeY.add(100);
-		snakeX.add(100);
-		snakeY.add(100);
+		snakeX.add("100");
+		snakeY.add("100");
+		snakeX.add("100");
+		snakeY.add("100");
 
-		// Sets the background colour
-		c.setColor(Color.decode("#8BC34A"));
 		// Draws the background
-		c.fillRect(0, 0, 640, 500);
-		// Sets the top bar colour
-		c.setColor(Color.decode("#689F38"));
+		c.fillRect(0, 0, 640, 500, Color.decode("#8BC34A"));
 		// Draws the top bar
-		c.fillRect(0, 0, 640, 50);
+		c.fillRect(0, 0, 640, 50, Color.decode("#689F38"));
 		int x = movement(score);
 		// Makes a new fruit X
 		fruit[1] = (1 + (int) (Math.random() * 24)) * 25;
 		// Makes a new fruit Y
 		fruit[2] = (1 + (int) (Math.random() * 16)) * 25 + 50;
-		// Sets fruit colour
-		c.setColor(Color.decode("#0000FF"));
 		// Draws fruit
-		c.fillRect(fruit[1], fruit[2], 25, 25);
+		c.fillRect(fruit[1], fruit[2], 25, 25, Color.decode("#0000FF"));
 		// Declares that a new fruit should not be generated
 		fruit[0] = 2;
 
 		while (newMove != 0) {
 			// Updates score
 			score = snakeX.size() - 1;
-			// Sets top bar colour
-			c.setColor(Color.decode("#689F38"));
 			// Draws the background
-			c.fillRect(0, 0, 640, 50);
+			c.fillRect(0, 0, 640, 50, Color.decode("#689F38"));
 			// Set score colour
 			c.setColor(Color.decode("#212121"));
 			// Sets score font
@@ -229,15 +245,13 @@ public class ISP {
 			c.drawString("Score: " + score, 10, 45);
 			// Draws Speed
 			c.drawString("Speed: " + (1000 - x), 350, 45);
-			// Sets erase colour to the background colour
-			c.setColor(Color.decode("#8BC34A"));
 			// Erases last position
-			c.fillRect(snakeX.getLast(), snakeY.getLast(), 25, 25);
-			// Sets snake colour
-			c.setColor(Color.decode("#FF4500"));
+			c.fillRect(Integer.parseInt((String) snakeX.getLast()), Integer.parseInt((String) snakeY.getLast()), 25, 25,
+					Color.decode("#8BC34A"));
 			// Draws the snake
 			for (int a = 0; a < snakeX.size() - 1; a++)
-				c.fillRoundRect(snakeX.get(a), snakeY.get(a), 25, 25, 10, 10);
+				c.fillRoundRect(Integer.parseInt((String) snakeX.get(a)), Integer.parseInt((String) snakeY.get(a)), 25,
+						25, 10, 10, Color.decode("#FF4500"));
 
 			// Allows the user to enter a direction
 			newMove = 1;
@@ -257,33 +271,30 @@ public class ISP {
 	}
 
 	private void scoreChecker(int score) throws FileNotFoundException, IOException {
-		LinkedList<String> players = new LinkedList<String>();
-		LinkedList<String> scores = new LinkedList<String>();
+		String[] players = new String[10];
+		String[] scores = new String[10];
 		String name = null;
 
 		BufferedReader buffer = new BufferedReader(new FileReader(new File("leaderboard.dat")));
 		for (int x = 0; x < 10; x++)
-			players.add(buffer.readLine());
+			players[x] = buffer.readLine();
 		for (int x = 0; x < 10; x++)
-			scores.add(buffer.readLine());
+			scores[x] = buffer.readLine();
 		buffer.close();
 
 		for (int x = 0; x < 10; x++) {
-			if (score > Integer.parseInt(scores.get(x))) {
+			if (score > Integer.parseInt(scores[x])) {
 				while (name == null || name.length() > 20)
 					name = JOptionPane.showInputDialog(null, "Please enter your name (20 characters or less):",
 							"Congratulations! New high score!", JOptionPane.QUESTION_MESSAGE);
-				players.add(x, name);
-				scores.add(x, "" + score);
-
-				scores.remove(10);
-				players.remove(10);
+				players[x] = name;
+				scores[x] = Integer.toString(score);
 
 				PrintWriter output = new PrintWriter(new FileWriter("leaderboard.dat"));
 				for (int z = 0; z < 10; z++)
-					output.println(players.get(z));
+					output.println(players[z]);
 				for (int z = 0; z < 10; z++)
-					output.println(scores.get(z));
+					output.println(scores[z]);
 				output.close();
 
 				break;
@@ -304,16 +315,10 @@ public class ISP {
 
 	private void title() {
 		c.clear();
-		// Sets the background colour
-		c.setColor(Color.decode("#8BC34A"));
 		// Draws the background
-		c.fillRect(0, 0, 640, 500);
-		// Sets the colour to gray
-		c.setColor(Color.decode("#212121"));
-		// Uses the imported font
-		c.setFont(font.deriveFont(100f));
+		c.fillRect(0, 0, 640, 500, Color.decode("#8BC34A"));
 		// Draws the title
-		c.drawString("Snake!", 150, 90);
+		c.drawString("Snake!", 150, 90, font.deriveFont(100f), Color.decode("#212121"));
 	}
 
 	/*-****************************************************************************************
@@ -322,17 +327,13 @@ public class ISP {
 	 *****************************************************************************************/
 	private void pauseProgram(int x) {
 		String y = null;
-		// Sets the colour to gray
-		c.setColor(Color.decode("#212121"));
-		// Uses the imported font
-		c.setFont(font.deriveFont(30f));
 		// Checks if to exit or continue
 		if (x == 1)
 			y = "continue";
 		else if (x == 2)
 			y = "exit";
 		// Prompts the user to press a key
-		c.drawString("Press any key to " + y + "...", 10, 480);
+		c.drawString("Press any key to " + y + "...", 10, 480, font.deriveFont(30f), Color.decode("#212121"));
 		// Waits for user input
 		getChar();
 	}
@@ -440,13 +441,11 @@ public class ISP {
 	}
 
 	public void splashScreen() {
-		c.clear();
-
+		// Sets font size to 100
 		c.setFont(font.deriveFont(100f));
-		c.setColor(Color.decode("#8BC34A"));
 		for (int x = -350; x < 0; x++) {
-			c.setColor(Color.decode("#8BC34A"));
-			c.fillRect(0, 0, 800, 600);
+			// Erase
+			c.fillRect(0, 0, 800, 600, Color.decode("#8BC34A"));
 
 			c.setColor(Color.decode("#212121"));
 			c.drawString("SCHWARTZ", 55, 210 + x);
@@ -519,7 +518,7 @@ public class ISP {
 	public static void main(String[] args) {
 		ISP i = new ISP();
 		i.thread.start();
-		i.splashScreen();
+		// i.splashScreen();
 		while (true) {
 			i.mainMenu();
 			if (i.option == '1')
