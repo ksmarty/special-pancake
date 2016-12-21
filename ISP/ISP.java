@@ -44,15 +44,14 @@ import hsa.Console;
 
 public class ISP {
 	static Console c;
-	char option;
-	Font font;
-	LinkedList snakeX = new LinkedList();
-	LinkedList snakeY = new LinkedList();
-	char key;
-	KeyEvent ke;
-	int[] fruit = new int[3];
-	int newMove;
-	Thread thread = new Thread(new Music(c));
+	private char option;
+	static Font font;
+	private LinkedList snakeX = new LinkedList();
+	private LinkedList snakeY = new LinkedList();
+	private char key;
+	private KeyEvent ke;
+	private int[] fruit = new int[3];
+	private int newMove;
 
 	/*-****************************************************************************************
 	 * ISP
@@ -84,6 +83,16 @@ public class ISP {
 					key = ke.getKeyChar();
 			}
 		}, AWTEvent.KEY_EVENT_MASK);
+	}
+
+	public void splashScreen() {
+		Animation a = new Animation(c);
+		a.run();
+	}
+
+	public void music() {
+		Music m = new Music(c);
+		m.start();
 	}
 
 	/*-****************************************************************************************
@@ -349,7 +358,6 @@ public class ISP {
 		pauseProgram(2);
 		try {
 			Music.play.stop();
-			thread.stop();
 		} catch (Exception e) {
 		}
 		c.close();
@@ -399,6 +407,8 @@ public class ISP {
 		c.setFont(font.deriveFont(50f));
 		c.drawString("1. Set Volume", 27, 210);
 		c.drawString("2. Choose Song", 27, 260);
+		c.drawString(Float.toString(Music.volume.getMaximum()), 27, 310);
+		c.drawString(Float.toString(Music.volume.getMinimum()), 27, 360);
 		getChar();
 		option = key;
 		if (option == '1') {
@@ -406,18 +416,18 @@ public class ISP {
 			int h = -1;
 			while (true) {
 				g = JOptionPane.showInputDialog(null,
-						"Current Volume: " + Math.round(Math.abs(Music.volume.getValue()) / 70 * 100)
-								+ "%\nPlease enter a volume between 0 - 100 %",
+						"Current Volume: " + Math.round(Music.volume.getValue())
+								+ " dB\nPlease enter a volume between 0 and -70 dB",
 						"Change Volume", JOptionPane.QUESTION_MESSAGE);
 				try {
 					h = Integer.parseInt(g);
 				} catch (NumberFormatException e) {
 
 				}
-				if (h > -1 && h < 101)
+				if (h > -71 && h < 1)
 					break;
 			}
-			Music.volume.setValue((float) (-70 + h / 1.43));
+			Music.volume.setValue(h);
 		} else if (option == '2') {
 			Object[] possibilities = { "Song 1", "Song 2", "Song 3" };
 			String s = null;
@@ -440,27 +450,6 @@ public class ISP {
 			}
 		}
 
-	}
-
-	public void splashScreen() {
-		// Sets font size to 100
-		c.setFont(font.deriveFont(100f));
-		for (int x = -350; x < 0; x++) {
-			// Erase
-			c.fillRect(0, 0, 800, 600, Color.decode("#8BC34A"));
-
-			c.setColor(Color.decode("#212121"));
-			c.drawString("SCHWARTZ", 55, 210 + x);
-			c.drawString("STUDIOS", 95, 310 + x);
-			try {
-				Thread.sleep(16);
-			} catch (InterruptedException e) {
-			}
-		}
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-		}
 	}
 
 	public void legal() {
@@ -519,8 +508,8 @@ public class ISP {
 
 	public static void main(String[] args) {
 		ISP i = new ISP();
-		i.thread.start();
-		// i.splashScreen();
+		i.music();
+		i.splashScreen();
 		while (true) {
 			i.mainMenu();
 			if (i.option == '1')
