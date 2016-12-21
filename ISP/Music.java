@@ -33,7 +33,7 @@ public class Music implements Runnable {
 				play = AudioSystem.getClip();
 				play.open(audioInputStream);
 				volume = (FloatControl) play.getControl(FloatControl.Type.MASTER_GAIN);
-				volume.setValue(0.0f);
+				volume.setValue(-35f);
 				play.start();
 				do {
 					try {

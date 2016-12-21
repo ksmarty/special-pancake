@@ -405,8 +405,10 @@ public class ISP {
 			String g = null;
 			int h = -1;
 			while (true) {
-				g = JOptionPane.showInputDialog(null, "Please enter a volume between 0 - 100 %", "Change Volume",
-						JOptionPane.QUESTION_MESSAGE);
+				g = JOptionPane.showInputDialog(null,
+						"Current Volume: " + Math.round(Math.abs(Music.volume.getValue()) / 70 * 100)
+								+ "%\nPlease enter a volume between 0 - 100 %",
+						"Change Volume", JOptionPane.QUESTION_MESSAGE);
 				try {
 					h = Integer.parseInt(g);
 				} catch (NumberFormatException e) {
@@ -415,7 +417,7 @@ public class ISP {
 				if (h > -1 && h < 101)
 					break;
 			}
-			Music.volume.setValue(-50 + h / 2);
+			Music.volume.setValue((float) (-70 + h / 1.43));
 		} else if (option == '2') {
 			Object[] possibilities = { "Song 1", "Song 2", "Song 3" };
 			String s = null;
