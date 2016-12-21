@@ -12,7 +12,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import hsa.Console;
 
-public class Music implements Runnable {
+public class Music extends Thread {
 	Console c;
 	static FloatControl volume;
 	static File song1 = new File("song1.wav");
@@ -26,14 +26,14 @@ public class Music implements Runnable {
 		this.c = c;
 	}
 
-	public void run() {
+	public void music() {
 		while (true) {
 			try {
 				audioInputStream = AudioSystem.getAudioInputStream(song);
 				play = AudioSystem.getClip();
 				play.open(audioInputStream);
 				volume = (FloatControl) play.getControl(FloatControl.Type.MASTER_GAIN);
-				volume.setValue(-35f);
+				volume.setValue(-15f);
 				play.start();
 				do {
 					try {
@@ -52,5 +52,9 @@ public class Music implements Runnable {
 				}
 			}
 		}
+	}
+
+	public void run() {
+		music();
 	}
 }
