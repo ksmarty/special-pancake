@@ -4,9 +4,11 @@ import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 
+import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
@@ -52,6 +55,9 @@ public class ISP {
 	private KeyEvent ke;
 	private int[] fruit = new int[3];
 	private int newMove;
+	private Music m = new Music(c);
+	private Color snakeColour = Color.decode("#FF4500");
+	BufferedImage[] images = new BufferedImage[4];
 
 	/*-****************************************************************************************
 	 * ISP
@@ -68,7 +74,7 @@ public class ISP {
 		c = new Console(25, 78, "Snake! - Kyle Schwartz's ISP");
 		// Sets up the font
 		try {
-			font = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("isp.ttf"));
+			font = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("isp.otf"));
 		} catch (FileNotFoundException e) {
 		} catch (FontFormatException e) {
 		} catch (IOException e) {
@@ -91,8 +97,136 @@ public class ISP {
 	}
 
 	public void music() {
-		Music m = new Music(c);
 		m.start();
+	}
+
+	private void getChar() {
+		char z = key;
+		while (key == z) {
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+			}
+		}
+		option = key;
+	}
+
+	/*-****************************************************************************************
+	 * title
+	 * This method draws a green background as well as the title.
+	 *****************************************************************************************/
+
+	private void title() {
+		c.clear();
+		// Draws the background
+		c.fillRect(0, 0, 640, 500, Color.decode("#8BC34A"));
+		// Draws the title
+		c.drawString("Snake!", 150, 90, font.deriveFont(100f), Color.decode("#212121"));
+	}
+
+	/*-****************************************************************************************
+	 * pauseProgram
+	 * This method pauses the program and waits for the user to press a key.
+	 *****************************************************************************************/
+	private void pauseProgram(int x) {
+		String y = null;
+		// Checks if to exit or continue
+		if (x == 1)
+			y = "continue";
+		else if (x == 2)
+			y = "exit";
+		// Prompts the user to press a key
+		c.drawString("Press any key to " + y + "...", 10, 480, font.deriveFont(30f), Color.decode("#212121"));
+		// Waits for user input
+		getChar();
+	}
+
+	public void mainMenu() {
+		title();
+
+		c.setFont(font.deriveFont(50f));
+		int x = 210;
+		c.drawString("1. Play", 27, x);
+		c.drawString("2. Instructions", 21, x + 50);
+		c.drawString("3. Leaderboard", 25, x + 100);
+		c.drawString("4. Settings", 20, x + 150);
+		c.drawString("5. Lawyer Stuff", 20, x + 200);
+		c.drawString("6. Exit", 20, x + 250);
+
+		getChar();
+	}
+
+	public void snake() {
+		fruit[0] = 1;
+		int score = 1;
+		newMove = 1;
+
+		snakeX.clear();
+		snakeY.clear();
+
+		snakeX.add("100");
+		snakeY.add("100");
+		snakeX.add("100");
+		snakeY.add("100");
+
+		try {
+			images[0] = ImageIO.read(new File("img1.png"));
+			images[1] = ImageIO.read(new File("img2.png"));
+			images[2] = ImageIO.read(new File("img3.png"));
+			images[3] = ImageIO.read(new File("img4.png"));
+		} catch (IOException e1) {
+		}
+
+		// Draws the background
+		c.fillRect(0, 0, 640, 500, Color.decode("#8BC34A"));
+		// Draws the top bar
+		c.fillRect(0, 0, 640, 50, Color.decode("#689F38"));
+		int x = movement(score);
+		// Makes a new fruit X
+		fruit[1] = (1 + (int) (Math.random() * 24)) * 25;
+		// Makes a new fruit Y
+		fruit[2] = (1 + (int) (Math.random() * 16)) * 25 + 50;
+		// Draws fruit
+		c.drawImage((Image) images[0 + (int) (Math.random() * 3)], fruit[1], fruit[2], null);
+		// Declares that a new fruit should not be generated
+		fruit[0] = 2;
+
+		while (newMove != 0) {
+			// Updates score
+			score = snakeX.size() - 1;
+			// Draws the background
+			c.fillRect(0, 0, 640, 50, Color.decode("#689F38"));
+			// Set score colour
+			c.setColor(Color.decode("#212121"));
+			// Sets score font
+			c.setFont(font.deriveFont(46f));
+			// Draws score
+			c.drawString("Score: " + score, 10, 45);
+			// Draws Speed
+			c.drawString("Speed: " + (1000 - x), 350, 45);
+			// Erases last position
+			c.fillRect(Integer.parseInt((String) snakeX.getLast()), Integer.parseInt((String) snakeY.getLast()), 25, 25,
+					Color.decode("#8BC34A"));
+			// Draws the snake
+			for (int a = 0; a < snakeX.size() - 1; a++)
+				c.fillRoundRect(Integer.parseInt((String) snakeX.get(a)), Integer.parseInt((String) snakeY.get(a)), 25,
+						25, 10, 10, snakeColour);
+
+			// Allows the user to enter a direction
+			newMove = 1;
+			try {
+				Thread.sleep(x);
+			} catch (InterruptedException e) {
+			}
+			x = movement(score);
+
+		}
+		// Highscore Checking
+		try {
+			scoreChecker(score);
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+		}
 	}
 
 	/*-****************************************************************************************
@@ -188,10 +322,8 @@ public class ISP {
 								e = false;
 							}
 						}
-						// Sets fruit colour
-						c.setColor(Color.decode("#0000FF"));
 						// Draws fruit
-						c.fillRect(fruit[1], fruit[2], 25, 25);
+						c.drawImage((Image) images[0 + (int) (Math.random() * 3)], fruit[1], fruit[2], null);
 						/*- Breaks the loop to prevent memory leak & unneeded processing */
 						break;
 					}
@@ -214,70 +346,6 @@ public class ISP {
 	 * Name			Type		Description
 	 * 
 	 *****************************************************************************************/
-	public void snake() {
-		fruit[0] = 1;
-		int score = 1;
-		newMove = 1;
-
-		snakeX.clear();
-		snakeY.clear();
-
-		snakeX.add("100");
-		snakeY.add("100");
-		snakeX.add("100");
-		snakeY.add("100");
-
-		// Draws the background
-		c.fillRect(0, 0, 640, 500, Color.decode("#8BC34A"));
-		// Draws the top bar
-		c.fillRect(0, 0, 640, 50, Color.decode("#689F38"));
-		int x = movement(score);
-		// Makes a new fruit X
-		fruit[1] = (1 + (int) (Math.random() * 24)) * 25;
-		// Makes a new fruit Y
-		fruit[2] = (1 + (int) (Math.random() * 16)) * 25 + 50;
-		// Draws fruit
-		c.fillRect(fruit[1], fruit[2], 25, 25, Color.decode("#0000FF"));
-		// Declares that a new fruit should not be generated
-		fruit[0] = 2;
-
-		while (newMove != 0) {
-			// Updates score
-			score = snakeX.size() - 1;
-			// Draws the background
-			c.fillRect(0, 0, 640, 50, Color.decode("#689F38"));
-			// Set score colour
-			c.setColor(Color.decode("#212121"));
-			// Sets score font
-			c.setFont(font.deriveFont(46f));
-			// Draws score
-			c.drawString("Score: " + score, 10, 45);
-			// Draws Speed
-			c.drawString("Speed: " + (1000 - x), 350, 45);
-			// Erases last position
-			c.fillRect(Integer.parseInt((String) snakeX.getLast()), Integer.parseInt((String) snakeY.getLast()), 25, 25,
-					Color.decode("#8BC34A"));
-			// Draws the snake
-			for (int a = 0; a < snakeX.size() - 1; a++)
-				c.fillRoundRect(Integer.parseInt((String) snakeX.get(a)), Integer.parseInt((String) snakeY.get(a)), 25,
-						25, 10, 10, Color.decode("#FF4500"));
-
-			// Allows the user to enter a direction
-			newMove = 1;
-			try {
-				Thread.sleep(x);
-			} catch (InterruptedException e) {
-			}
-			x = movement(score);
-
-		}
-		// Highscore Checking
-		try {
-			scoreChecker(score);
-		} catch (FileNotFoundException e) {
-		} catch (IOException e) {
-		}
-	}
 
 	private void scoreChecker(int score) throws FileNotFoundException, IOException {
 		String[] players = new String[10];
@@ -317,63 +385,6 @@ public class ISP {
 					JOptionPane.WARNING_MESSAGE);
 	}
 
-	/*-****************************************************************************************
-	 * title
-	 * This method draws a green background as well as the title.
-	 *****************************************************************************************/
-
-	private void title() {
-		c.clear();
-		// Draws the background
-		c.fillRect(0, 0, 640, 500, Color.decode("#8BC34A"));
-		// Draws the title
-		c.drawString("Snake!", 150, 90, font.deriveFont(100f), Color.decode("#212121"));
-	}
-
-	/*-****************************************************************************************
-	 * pauseProgram
-	 * This method pauses the program and waits for the user to press a key.
-	 *****************************************************************************************/
-	private void pauseProgram(int x) {
-		String y = null;
-		// Checks if to exit or continue
-		if (x == 1)
-			y = "continue";
-		else if (x == 2)
-			y = "exit";
-		// Prompts the user to press a key
-		c.drawString("Press any key to " + y + "...", 10, 480, font.deriveFont(30f), Color.decode("#212121"));
-		// Waits for user input
-		getChar();
-	}
-
-	public void goodBye() {
-		title();
-
-		c.setFont(font.deriveFont(40f));
-		c.drawString("Thank you for playing ", 10, 200);
-		c.drawString("Snake! This program was ", 10, 240);
-		c.drawString("made by Kyle Schwartz.", 10, 280);
-
-		pauseProgram(2);
-		try {
-			Music.play.stop();
-		} catch (Exception e) {
-		}
-		c.close();
-	}
-
-	private void getChar() {
-		char z = key;
-		while (key == z) {
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-			}
-		}
-		option = key;
-	}
-
 	public void instructions() {
 		title();
 		c.setFont(font.deriveFont(30f));
@@ -383,82 +394,6 @@ public class ISP {
 		c.drawString("grow and go faster. Never run into", 10, 270);
 		c.drawString("yourself or the edge, or you'll die.", 10, 300);
 		c.drawString("Have Fun!", 10, 330);
-
-		pauseProgram(1);
-	}
-
-	public void mainMenu() {
-		title();
-
-		c.setFont(font.deriveFont(50f));
-		int x = 210;
-		c.drawString("1. Play", 27, x);
-		c.drawString("2. Instructions", 21, x + 50);
-		c.drawString("3. Leaderboard", 25, x + 100);
-		c.drawString("4. Settings", 20, x + 150);
-		c.drawString("5. Lawyer Stuff", 20, x + 200);
-		c.drawString("6. Exit", 20, x + 250);
-
-		getChar();
-	}
-
-	public void settings() throws UnsupportedAudioFileException, IOException {
-		title();
-		c.setFont(font.deriveFont(50f));
-		c.drawString("1. Set Volume", 27, 210);
-		c.drawString("2. Choose Song", 27, 260);
-		c.drawString(Float.toString(Music.volume.getMaximum()), 27, 310);
-		c.drawString(Float.toString(Music.volume.getMinimum()), 27, 360);
-		getChar();
-		option = key;
-		if (option == '1') {
-			String g = null;
-			int h = -1;
-			while (true) {
-				g = JOptionPane.showInputDialog(null,
-						"Current Volume: " + Math.round(Music.volume.getValue())
-								+ " dB\nPlease enter a volume between 0 and -70 dB",
-						"Change Volume", JOptionPane.QUESTION_MESSAGE);
-				try {
-					h = Integer.parseInt(g);
-				} catch (NumberFormatException e) {
-
-				}
-				if (h > -71 && h < 1)
-					break;
-			}
-			Music.volume.setValue(h);
-		} else if (option == '2') {
-			Object[] possibilities = { "Song 1", "Song 2", "Song 3" };
-			String s = null;
-			while (s == null)
-				s = (String) JOptionPane.showInputDialog(null, "Please choose a song.", "Song Choice",
-						JOptionPane.PLAIN_MESSAGE, null, possibilities, "Song 1");
-
-			if (s == "Song 1")
-				Music.song = Music.song1;
-			else if (s == "Song 2")
-				Music.song = Music.song2;
-			else if (s == "Song 3")
-				Music.song = Music.song3;
-
-			try {
-				Music.play.close();
-				Music.play = AudioSystem.getClip();
-				Music.play.open(Music.audioInputStream);
-			} catch (Exception e) {
-			}
-		}
-
-	}
-
-	public void legal() {
-		title();
-		c.setFont(font.deriveFont(30f));
-
-		c.drawString("Copyright 2016 Kyle Schwartz", 10, 210);
-		c.drawString("\"Resistor Anthems\" by Eric Skiff is", 10, 270);
-		c.drawString("licenced under CC BY 4.0", 10, 300);
 
 		pauseProgram(1);
 	}
@@ -504,6 +439,111 @@ public class ISP {
 			output.close();
 			leaderboard();
 		}
+	}
+
+	public void settings() throws UnsupportedAudioFileException, IOException {
+		title();
+		c.setFont(font.deriveFont(50f));
+		c.drawString("1. Choose Song", 27, 210);
+		c.drawString("2. Mute Sound", 27, 260);
+		c.drawString("3. Snake Colour", 27, 310);
+		getChar();
+		option = key;
+		if (option == '1') {
+			Object[] possibilities = { "Underclocked", "Chibi Ninja", "Ascending" };
+			String s = null;
+			while (s == null)
+				s = (String) JOptionPane.showInputDialog(null, "Please choose a song", "Song Choice",
+						JOptionPane.PLAIN_MESSAGE, null, possibilities, "Underclocked");
+
+			if (s == "Song 1")
+				Music.song = Music.song1;
+			else if (s == "Song 2")
+				Music.song = Music.song2;
+			else if (s == "Song 3")
+				Music.song = Music.song3;
+
+			try {
+				Music.play.close();
+				Music.play = AudioSystem.getClip();
+				Music.play.open(Music.audioInputStream);
+			} catch (Exception e) {
+			}
+		} else if (option == '2') {
+			if (Music.volume.getValue() == -15f)
+				Music.volume.setValue(-80f);
+			else
+				Music.volume.setValue(-15f);
+		} else if (option == '3') {
+			// Use A100 colours from: https://www.materialpalette.com/colors
+
+			Object[] possibilities = { "Red", "Pink", "Purple", "Deep Purple", "Indigo", "Blue", "Light Blue", "Cyan",
+					"Teal", "Yellow", "Amber", "Orange", "Deep Orange", "Brown", "Grey" };
+			String s = null;
+			while (s == null)
+				s = (String) JOptionPane.showInputDialog(null, "Please choose a colour", "Colour Picker",
+						JOptionPane.PLAIN_MESSAGE, null, possibilities, "Red");
+
+			if (s == "Red")
+				snakeColour = Color.decode("#ff8a80");
+			else if (s == "Pink")
+				snakeColour = Color.decode("#ff80ab");
+			else if (s == "Purple")
+				snakeColour = Color.decode("#ea80fc");
+			else if (s == "Deep Purple")
+				snakeColour = Color.decode("#b388ff");
+			else if (s == "Indigo")
+				snakeColour = Color.decode("#8c9eff");
+			else if (s == "Blue")
+				snakeColour = Color.decode("#82b1ff");
+			else if (s == "Light Blue")
+				snakeColour = Color.decode("#80d8ff");
+			else if (s == "Cyan")
+				snakeColour = Color.decode("#84ffff");
+			else if (s == "Teal")
+				snakeColour = Color.decode("#a7ffeb");
+			else if (s == "Yellow")
+				snakeColour = Color.decode("#ffff8d");
+			else if (s == "Amber")
+				snakeColour = Color.decode("#ffe57f");
+			else if (s == "Orange")
+				snakeColour = Color.decode("#ffd180");
+			else if (s == "Deep Orange")
+				snakeColour = Color.decode("#ff9e80");
+			else if (s == "Brown")
+				snakeColour = Color.decode("#6d4c41");
+			else if (s == "Grey")
+				snakeColour = Color.decode("#757575");
+
+		}
+
+	}
+
+	public void legal() {
+		title();
+		c.setFont(font.deriveFont(30f));
+
+		c.drawString("Copyright 2016 Kyle Schwartz", 10, 210);
+		c.drawString("\"Resistor Anthems\" by Eric Skiff is", 10, 270);
+		c.drawString("licenced under CC BY 4.0", 10, 300);
+
+		pauseProgram(1);
+	}
+
+	public void goodBye() {
+		title();
+
+		c.setFont(font.deriveFont(40f));
+		c.drawString("Thank you for playing ", 10, 200);
+		c.drawString("Snake! This program was ", 10, 240);
+		c.drawString("made by Kyle Schwartz.", 10, 280);
+
+		pauseProgram(2);
+		try {
+			m.stop();
+		} catch (Exception e) {
+		}
+		c.close();
 	}
 
 	public static void main(String[] args) {
