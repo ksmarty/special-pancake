@@ -12,6 +12,28 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import hsa.Console;
 
+/*-
+ * Kyle Schwartz
+ * Snake!
+ * Mrs. Krasteva
+ * January 9, 2017
+ * This program allows you to play the classic game snake. The user has many options that 
+ * most games have including instructions, settings, a leaderboard, and the game itself.
+ */
+/*-****************************************************************************************
+ * Variables 
+ * Name				Type				Description
+ * ---------------------------------------------------------------------------------------
+ * c				Console				Stores an instance of the ISP.java console
+ * volume			FloatControl		Stores the current music volume
+ * song1			File				Stores the song1.wav file
+ * song2			File				Stores the song2.wav file
+ * song3			File				Stores the song3.wav file
+ * audioInputStream	AudioInputStream	Stores the Audio Input Stream
+ * play				Clip				Contains the current clip being played
+ * song				File				Stores the current song being played
+ *****************************************************************************************/
+
 public class Music extends Thread {
 	Console c;
 	static FloatControl volume;

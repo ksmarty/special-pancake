@@ -27,22 +27,27 @@ import javax.swing.JOptionPane;
 import hsa.Console;
 /*-
  * Kyle Schwartz
+ * Snake!
  * Mrs. Krasteva
- * January, 2017
- * Snake! My ISP that allows you to play the classic game snake.
+ * January 9, 2017
+ * This program allows you to play the classic game snake. The user has many options that 
+ * most games have including instructions, settings, a leaderboard, and the game itself.
  */
 /*-****************************************************************************************
  * Variables 
- * Name			Type		Description
+ * Name			Type			Description
  * ---------------------------------------------------------------------------------------
- * option		char		Stores the user's menu choice
- * font			Font		Stores the font used on all screens
- * snakeX		LinkedList	Stores all of the snake X positions
- * snakeY		LinkedList	Stores all of the snake Y positions
- * key			char		Stores the user's ASCII key presses
- * ke			KeyEvent	Stores the user's arrow key presses
- * fruit		int[]		Stores the x & y coordinates of the fruit and whether a new one should be generated
- * newMove		int			Checks if the user is allowed to move and quits the game
+ * option		char			Stores the user's menu choice
+ * font			Font			Stores the font used on all screens
+ * snakeX		LinkedList		Stores all of the snake X positions
+ * snakeY		LinkedList		Stores all of the snake Y positions
+ * key			char			Stores the user's ASCII key presses
+ * ke			KeyEvent		Stores the user's arrow key presses
+ * fruit		int[]			Stores the x & y coordinates of the fruit and whether a new one should be generated
+ * newMove		int				Checks if the user is allowed to move and quits the game
+ * m			Music			Stores the current song
+ * snakeColour	Color			Stores the snake's colour
+ * images		BufferedImage	Stores the fruit images
  *****************************************************************************************/
 
 public class ISP {
@@ -65,6 +70,7 @@ public class ISP {
 	 * 
 	 * Variables 
 	 * Name			Type		Description
+	 * ---------------------------------------------------------------------------------------
 	 * font			Font		Stores the font used on all screens
 	 * c			Console		Stores the console instance
 	 * key			char		Gets the user's ASCII key presses
@@ -72,7 +78,7 @@ public class ISP {
 	 *****************************************************************************************/
 	public ISP() {
 		c = new Console(25, 78, "Snake! - Kyle Schwartz's ISP");
-		// Sets up the font
+		// Sets up the font and ensures the file exists
 		try {
 			font = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("isp.otf"));
 		} catch (FileNotFoundException e) {
@@ -83,23 +89,52 @@ public class ISP {
 		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
 			public void eventDispatched(AWTEvent awte) {
 				ke = (KeyEvent) awte;
+				// If no key is pressed, do nothing
 				if (!ke.getComponent().getName().equals("canvas0"))
 					return;
+				// If a key is pressed, set key to that value
 				if (KeyEvent.KEY_PRESSED == ke.getID())
 					key = ke.getKeyChar();
 			}
 		}, AWTEvent.KEY_EVENT_MASK);
 	}
 
+	/*-****************************************************************************************
+	 * splashScreen
+	 * This method calls Animation.java which contains the splash screen animation.
+	 * 
+	 * Variables 
+	 * Name			Type		Description
+	 * ---------------------------------------------------------------------------------------
+	 * a			Animation	Stores an instance of the Animation class
+	 *****************************************************************************************/
 	public void splashScreen() {
 		Animation a = new Animation(c);
 		a.run();
 	}
 
+	/*-****************************************************************************************
+	 * music
+	 * This method calls Music.java which contains the background music
+	 * 
+	 * Variables 
+	 * Name			Type		Description
+	 * ---------------------------------------------------------------------------------------
+	 * m			Music		Stores an instance of the Music class
+	 *****************************************************************************************/
 	public void music() {
 		m.start();
 	}
 
+	/*-****************************************************************************************
+	 * getChar
+	 * This method waits for user input and then sets option to the user's input
+	 * 
+	 * Variables 
+	 * Name			Type		Description
+	 * ---------------------------------------------------------------------------------------
+	 * z			char		Stores the value of key
+	 *****************************************************************************************/
 	private void getChar() {
 		char z = key;
 		while (key == z) {
@@ -115,7 +150,6 @@ public class ISP {
 	 * title
 	 * This method draws a green background as well as the title.
 	 *****************************************************************************************/
-
 	private void title() {
 		c.clear();
 		// Draws the background
@@ -127,6 +161,11 @@ public class ISP {
 	/*-****************************************************************************************
 	 * pauseProgram
 	 * This method pauses the program and waits for the user to press a key.
+	 *
+	 * Variables 
+	 * Name			Type		Description
+	 * ---------------------------------------------------------------------------------------
+	 * y			String		Stores whether user user is leaving or not
 	 *****************************************************************************************/
 	private void pauseProgram(int x) {
 		String y = null;
@@ -144,34 +183,50 @@ public class ISP {
 		getChar();
 	}
 
+	/*-****************************************************************************************
+	 * mainMenu
+	 * This method displays the main menu options
+	 *****************************************************************************************/
 	public void mainMenu() {
 		title();
 
 		c.setFont(font.deriveFont(50f));
-		int x = 210;
-		c.drawString("1. Play", 27, x);
-		c.drawString("2. Instructions", 21, x + 50);
-		c.drawString("3. Leaderboard", 25, x + 100);
-		c.drawString("4. Settings", 20, x + 150);
-		c.drawString("5. Lawyer Stuff", 20, x + 200);
-		c.drawString("6. Exit", 20, x + 250);
+		c.drawString("1. Play", 27, 210);
+		c.drawString("2. Instructions", 21, 260);
+		c.drawString("3. Leaderboard", 25, 310);
+		c.drawString("4. Settings", 20, 360);
+		c.drawString("5. Lawyer Stuff", 20, 410);
+		c.drawString("6. Exit", 20, 460);
 
 		getChar();
 	}
 
+	/*-****************************************************************************************
+	 * snake
+	 * This method runs the snake game
+	 * 
+	 * Variables 
+	 * Name			Type		Description
+	 * ---------------------------------------------------------------------------------------
+	 * score		int			Stores the user's score based on snake size
+	 * x			int			Gets the speed returned by movement
+	 *****************************************************************************************/
 	public void snake() {
 		fruit[0] = 1;
 		int score = 1;
 		newMove = 1;
 
+		// Clears the snake lists
 		snakeX.clear();
 		snakeY.clear();
 
+		// Adds 2 locations to each list
 		snakeX.add("100");
 		snakeY.add("100");
 		snakeX.add("100");
 		snakeY.add("100");
 
+		// Imports the fruit images and catches any IO exceptions
 		try {
 			images[0] = ImageIO.read(new File("img1.png"));
 			images[1] = ImageIO.read(new File("img2.png"));
@@ -194,6 +249,7 @@ public class ISP {
 		// Declares that a new fruit should not be generated
 		fruit[0] = 2;
 
+		// Continues until the user loses or presses ESC
 		while (newMove != 0) {
 			// Updates score
 			score = snakeX.size() - 1;
@@ -233,8 +289,18 @@ public class ISP {
 	}
 
 	/*-****************************************************************************************
-	 * key
-	 * This method sets the direction that the snake is going to move
+	 * movement
+	 * This method moves the snake and checks if the user loses
+	 * 
+	 * Variables 
+	 * Name			Type		Description
+	 * ---------------------------------------------------------------------------------------
+	 * x			int			For loop counter
+	 * z			int			For loop counter			
+	 * b			int			For loop counter			
+	 * c			int			For loop counter			
+	 * d			int			For loop counter
+	 * e			boolean		While loop condition
 	 *****************************************************************************************/
 	private int movement(int score) {
 		// Checks if the user is allowed to move
@@ -342,14 +408,17 @@ public class ISP {
 	}
 
 	/*-****************************************************************************************
-	 * snake
-	 * This method 
+	 * scoreChecker
+	 * This method checks if a user gets a high score
 	 * 
 	 * Variables 
 	 * Name			Type		Description
-	 * 
+	 * ---------------------------------------------------------------------------------------
+	 * players		String[]	Stores the top 10 player names read from a file
+	 * scores		String[]	Stores the top 10 player scores read from a file
+	 * name			String		Stores the player's name if they achieve a high score
+	 * x			int			For loop counter
 	 *****************************************************************************************/
-
 	private void scoreChecker(int score) throws FileNotFoundException, IOException {
 		String[] players = new String[10];
 		String[] scores = new String[10];
@@ -388,6 +457,10 @@ public class ISP {
 					JOptionPane.WARNING_MESSAGE);
 	}
 
+	/*-****************************************************************************************
+	 * instructions
+	 * This method gives the user the instructions and waits for input
+	 *****************************************************************************************/
 	public void instructions() {
 		title();
 		c.setFont(font.deriveFont(30f));
@@ -401,6 +474,21 @@ public class ISP {
 		pauseProgram(1);
 	}
 
+	/*-****************************************************************************************
+	 * leaderboard
+	 * This method shows the user the leaderboard, but hides null values
+	 * 
+	 * Variables 
+	 * Name			Type		Description
+	 * ---------------------------------------------------------------------------------------
+	 * players		String[]		Stores the top 10 player names read from a file
+	 * scores		String[]		Stores the top 10 player scores read from a file
+	 * buffer		BufferedReader	Stores an instance of the leaderboard.dat file
+	 * x			int				For loop counter
+	 * y			String			Stores player name
+	 * z			String			Stores player score
+	 * output		PrintWriter		Stores an instance of the leaderboard.dat file that can be written to
+	 *****************************************************************************************/
 	public void leaderboard() throws FileNotFoundException, IOException {
 		title();
 
@@ -444,6 +532,15 @@ public class ISP {
 		}
 	}
 
+	/*-****************************************************************************************
+	 * settings
+	 * This method displays the settings menu and allows you to change the settings
+	 * 
+	 * Variables 
+	 * Name			Type		Description
+	 * ---------------------------------------------------------------------------------------
+	 * s			String		Stores song and/or colour choice
+	 *****************************************************************************************/
 	public void settings() throws UnsupportedAudioFileException, IOException {
 		while (true) {
 			title();
@@ -525,6 +622,10 @@ public class ISP {
 		}
 	}
 
+	/*-****************************************************************************************
+	 * legal
+	 * This method displays some legal information
+	 *****************************************************************************************/
 	public void legal() {
 		title();
 		c.setFont(font.deriveFont(30f));
@@ -536,6 +637,10 @@ public class ISP {
 		pauseProgram(1);
 	}
 
+	/*-****************************************************************************************
+	 * goodBye
+	 * This method thanks the user for playing and stops the music, then closes the program
+	 *****************************************************************************************/
 	public void goodBye() {
 		title();
 
@@ -552,6 +657,15 @@ public class ISP {
 		c.close();
 	}
 
+	/*-****************************************************************************************
+	 * main
+	 * This method is the main method and controls the entire program's function
+	 * 
+	 * Variables 
+	 * Name			Type		Description
+	 * ---------------------------------------------------------------------------------------
+	 * i			ISP			Instance of the ISP class
+	 *****************************************************************************************/
 	public static void main(String[] args) {
 		ISP i = new ISP();
 		i.music();

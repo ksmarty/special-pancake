@@ -4,6 +4,21 @@ import java.awt.Color;
 
 import hsa.Console;
 
+/*-
+ * Kyle Schwartz
+ * Snake!
+ * Mrs. Krasteva
+ * January 9, 2017
+ * This program allows you to play the classic game snake. The user has many options that 
+ * most games have including instructions, settings, a leaderboard, and the game itself.
+ */
+/*-****************************************************************************************
+ * Variables 
+ * Name			Type		Description
+ * ---------------------------------------------------------------------------------------
+ * c			Console		Stores an instance of the ISP.java console
+ *****************************************************************************************/
+
 public class Animation extends Thread {
 	Console c;
 
