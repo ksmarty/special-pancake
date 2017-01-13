@@ -547,83 +547,81 @@ public class ISP {
 	 * s			String		Stores song and/or colour choice
 	 *****************************************************************************************/
 	public void settings() throws UnsupportedAudioFileException, IOException {
-		while (true) {
-			title();
-			c.setFont(font.deriveFont(50f));
-			c.drawString("1. Choose Song", 27, 210);
-			c.drawString("2. Mute Sound", 27, 260);
-			c.drawString("3. Snake Colour", 27, 310);
-			pauseProgram(3);
-			option = key;
-			if (option == '1') {
-				Object[] possibilities = { "Underclocked", "Chibi Ninja", "Ascending" };
-				String s = null;
-				while (s == null)
-					s = (String) JOptionPane.showInputDialog(null, "Please choose a song", "Song Choice",
-							JOptionPane.PLAIN_MESSAGE, null, possibilities, "Underclocked");
+		title();
+		c.setFont(font.deriveFont(50f));
+		c.drawString("1. Choose Song", 27, 210);
+		c.drawString("2. Mute Sound", 27, 260);
+		c.drawString("3. Snake Colour", 27, 310);
+		pauseProgram(3);
+		option = key;
+		if (option == '1') {
+			Object[] possibilities = { "Underclocked", "Chibi Ninja", "Ascending" };
+			String s = null;
+			while (s == null)
+				s = (String) JOptionPane.showInputDialog(null, "Please choose a song", "Song Choice",
+						JOptionPane.PLAIN_MESSAGE, null, possibilities, "Underclocked");
 
-				if (s == "Underclocked")
-					Music.song = Music.song1;
-				else if (s == "Chibi Ninja")
-					Music.song = Music.song2;
-				else if (s == "Ascending")
-					Music.song = Music.song3;
+			if (s == "Underclocked")
+				Music.song = Music.song1;
+			else if (s == "Chibi Ninja")
+				Music.song = Music.song2;
+			else if (s == "Ascending")
+				Music.song = Music.song3;
 
-				try {
-					Music.play.close();
-					Music.play = AudioSystem.getClip();
-					Music.play.open(Music.audioInputStream);
-				} catch (Exception e) {
-				}
-			} else if (option == '2') {
-				if (Music.volume.getValue() == -15f)
-					Music.volume.setValue(-80f);
-				else
-					Music.volume.setValue(-15f);
-			} else if (option == '3') {
-				// Use A100 colours from: https://www.materialpalette.com/colors
-
-				Object[] possibilities = { "Red", "Pink", "Purple", "Deep Purple", "Indigo", "Blue", "Light Blue",
-						"Cyan", "Teal", "Yellow", "Amber", "Orange", "Deep Orange", "Brown", "Grey" };
-				String s = null;
-				while (s == null)
-					s = (String) JOptionPane.showInputDialog(null, "Please choose a colour", "Colour Picker",
-							JOptionPane.PLAIN_MESSAGE, null, possibilities, "Red");
-
-				if (s == "Red")
-					snakeColour = Color.decode("#ff8a80");
-				else if (s == "Pink")
-					snakeColour = Color.decode("#ff80ab");
-				else if (s == "Purple")
-					snakeColour = Color.decode("#ea80fc");
-				else if (s == "Deep Purple")
-					snakeColour = Color.decode("#b388ff");
-				else if (s == "Indigo")
-					snakeColour = Color.decode("#8c9eff");
-				else if (s == "Blue")
-					snakeColour = Color.decode("#82b1ff");
-				else if (s == "Light Blue")
-					snakeColour = Color.decode("#80d8ff");
-				else if (s == "Cyan")
-					snakeColour = Color.decode("#84ffff");
-				else if (s == "Teal")
-					snakeColour = Color.decode("#a7ffeb");
-				else if (s == "Yellow")
-					snakeColour = Color.decode("#ffff8d");
-				else if (s == "Amber")
-					snakeColour = Color.decode("#ffe57f");
-				else if (s == "Orange")
-					snakeColour = Color.decode("#ffd180");
-				else if (s == "Deep Orange")
-					snakeColour = Color.decode("#ff9e80");
-				else if (s == "Brown")
-					snakeColour = Color.decode("#6d4c41");
-				else if (s == "Grey")
-					snakeColour = Color.decode("#757575");
-
-			} else if (option == 27) {
-				break;
+			try {
+				Music.play.close();
+				Music.play = AudioSystem.getClip();
+				Music.play.open(Music.audioInputStream);
+			} catch (Exception e) {
 			}
+		} else if (option == '2') {
+			if (Music.volume.getValue() == -15f)
+				Music.volume.setValue(-80f);
+			else
+				Music.volume.setValue(-15f);
+		} else if (option == '3') {
+			// Use A100 colours from: https://www.materialpalette.com/colors
+
+			Object[] possibilities = { "Red", "Pink", "Purple", "Deep Purple", "Indigo", "Blue", "Light Blue", "Cyan",
+					"Teal", "Yellow", "Amber", "Orange", "Deep Orange", "Brown", "Grey" };
+			String s = null;
+			while (s == null)
+				s = (String) JOptionPane.showInputDialog(null, "Please choose a colour", "Colour Picker",
+						JOptionPane.PLAIN_MESSAGE, null, possibilities, "Red");
+
+			if (s == "Red")
+				snakeColour = Color.decode("#ff8a80");
+			else if (s == "Pink")
+				snakeColour = Color.decode("#ff80ab");
+			else if (s == "Purple")
+				snakeColour = Color.decode("#ea80fc");
+			else if (s == "Deep Purple")
+				snakeColour = Color.decode("#b388ff");
+			else if (s == "Indigo")
+				snakeColour = Color.decode("#8c9eff");
+			else if (s == "Blue")
+				snakeColour = Color.decode("#82b1ff");
+			else if (s == "Light Blue")
+				snakeColour = Color.decode("#80d8ff");
+			else if (s == "Cyan")
+				snakeColour = Color.decode("#84ffff");
+			else if (s == "Teal")
+				snakeColour = Color.decode("#a7ffeb");
+			else if (s == "Yellow")
+				snakeColour = Color.decode("#ffff8d");
+			else if (s == "Amber")
+				snakeColour = Color.decode("#ffe57f");
+			else if (s == "Orange")
+				snakeColour = Color.decode("#ffd180");
+			else if (s == "Deep Orange")
+				snakeColour = Color.decode("#ff9e80");
+			else if (s == "Brown")
+				snakeColour = Color.decode("#6d4c41");
+			else if (s == "Grey")
+				snakeColour = Color.decode("#757575");
+
+		} else if (option == 27) {
+
 		}
 	}
 
