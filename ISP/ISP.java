@@ -18,6 +18,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioSystem;
@@ -62,7 +63,7 @@ public class ISP {
 	private int newMove;
 	private Music m = new Music(c);
 	private Color snakeColour = Color.decode("#FF4500");
-	BufferedImage[] images = new BufferedImage[4];
+	BufferedImage[] images = new BufferedImage[3];
 
 	/*-****************************************************************************************
 	 * ISP
@@ -202,8 +203,9 @@ public class ISP {
 	}
 
 	/*-****************************************************************************************
-	 * snake
-	 * This method runs the snake game
+	 * display
+	 * This method runs the snake game by showing the user an interactive UI, 
+	 * as well as allowing them to play the game
 	 * 
 	 * Variables 
 	 * Name			Type		Description
@@ -211,7 +213,7 @@ public class ISP {
 	 * score		int			Stores the user's score based on snake size
 	 * x			int			Gets the speed returned by movement
 	 *****************************************************************************************/
-	public void snake() {
+	public void display() {
 		fruit[0] = 1;
 		int score = 1;
 		newMove = 1;
@@ -231,7 +233,6 @@ public class ISP {
 			images[0] = ImageIO.read(new File("img1.png"));
 			images[1] = ImageIO.read(new File("img2.png"));
 			images[2] = ImageIO.read(new File("img3.png"));
-			images[3] = ImageIO.read(new File("img4.png"));
 		} catch (IOException e1) {
 		}
 
@@ -244,8 +245,12 @@ public class ISP {
 		fruit[1] = (1 + (int) (Math.random() * 24)) * 25;
 		// Makes a new fruit Y
 		fruit[2] = (1 + (int) (Math.random() * 16)) * 25 + 50;
+		// Creates a new instamce of the Random class
+		Random rand = new Random();
+		// Creates a new random number to generate a fruit
+		int n = rand.nextInt(2) + 0;
 		// Draws fruit
-		c.drawImage((Image) images[0 + (int) (Math.random() * 3)], fruit[1], fruit[2], null);
+		c.drawImage((Image) images[n], fruit[1], fruit[2], null);
 		// Declares that a new fruit should not be generated
 		fruit[0] = 2;
 
@@ -673,7 +678,7 @@ public class ISP {
 		while (true) {
 			i.mainMenu();
 			if (i.option == '1')
-				i.snake();
+				i.display();
 			else if (i.option == '2')
 				i.instructions();
 			else if (i.option == '3') {
